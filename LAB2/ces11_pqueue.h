@@ -4,9 +4,9 @@
 // Davi Honorio de Brito Pontes
 // 9389
 
-#ifndef CES11_PQUEUE.H
-#define CES11_PQUEUE.H
+#ifndef CES11_PQUEUE_H
+#define CES11_PQUEUE_H
 
 
 
-#endif // CES11_PQUEUE.H
+#endif // CES11_PQUEUE_H
