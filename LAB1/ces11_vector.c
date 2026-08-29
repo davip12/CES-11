@@ -115,17 +115,14 @@ bool c11vEmpty(c11vector* self)
 
 void* c11vInsert(c11vector* self, int pos)
 {
-	
 	if (!self)
 	{
 		fprintf(stderr, "c11Insert: argumento NULL");
 		exit(EXIT_FAILURE);
 	}
-	
-	//
-	if (pos < c11vSize(self))
-	
-	increaseCap(self);
+
+	if (pos > c11vSize(self))
+		increaseCap(self);
 	
 	// nao consegui pensar outro jeito senao usando memmove (string.h)
 	// criando um buraco para inserir o novo elemento
