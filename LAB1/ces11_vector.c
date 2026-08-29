@@ -70,7 +70,7 @@ c11vector* c11vInit(int elemSize , int n)
 	v->data_ = safeMalloc(elemSize * n);
 	v->elemSize_ = elemSize;
 	v->count_ = 0;
-	v->capacity_ = n;
+	v->capacity_ = n == 0 ? 2 : n;
 
 	return v;
 }

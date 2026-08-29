@@ -18,7 +18,7 @@ typedef struct c11vector c11vector;
  *  \param 	[int] n: tamanho incial do vetor (capacidade inicial).
  *  \return	[c11vector*]: ponteiro para o vetor recem-criado.
  */
-c11vector* c11vInit(int elemSize , int n);
+c11vector* c11vInit(int elemSize, int n);
 
 /**
  *  \brief	Libera toda a memoria alocada para o vetor.
