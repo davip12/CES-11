@@ -108,6 +108,11 @@ int c11vSize(c11vector* self)
 	return self->count_;
 }
 
+int c11vElemSize(c11vector* self)
+{
+	return self->elemSize_;
+}
+
 bool c11vEmpty(c11vector* self)
 {
 	return !c11vSize(self);

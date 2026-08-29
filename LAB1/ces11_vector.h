@@ -53,6 +53,14 @@ bool c11vEmpty(c11vector* self);
 int c11vSize(c11vector* self);
 
 /**
+ *  \brief Retorna o tamanho do tipo armazenado no vetor
+ *  
+ *  \param [in] self vetor a ser verificado.
+ *  \return [int] tamanho do tipo.
+ */
+int c11vElemSize(c11vector* self);
+
+/**
  *  \brief Abre espaco para um elemento na posicao pos do vetor.
  *  
  *  \param [in] self vetor no qual o elemento sera inserido.
