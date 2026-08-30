@@ -71,22 +71,15 @@ int main(void)
 	
 	puts("Inicializado.");
 	tarefa* tarefas[10];
-
-	tarefas[0] = tarefaInit("primeira tarefa", 10);
-	c11pqPush(pq, tarefas[0], compara);
-	tarefas[1] = tarefaInit("segunda tarefa", 20);
-	c11pqPush(pq, tarefas[1], compara);
-	tarefas[2] = tarefaInit("terceira tarefa", 30);
-	c11pqPush(pq, tarefas[2], compara);
-	tarefas[3] = tarefaInit("essa tarefa veio primeiro", 25);
-	c11pqPush(pq, tarefas[3], compara);
-	tarefas[4] = tarefaInit("essa tarefa veio depois", 25);
-	c11pqPush(pq, tarefas[4], compara);
-	tarefas[5] = tarefaInit("essa tarefa veio muito depois", 25);
-	c11pqPush(pq, tarefas[5], compara);
-	tarefas[6] = tarefaInit("essa veio por ultimo", 5);
-	c11pqPush(pq, tarefas[6], compara);
 	
+	for (int i = 0; i < 7; i++)
+	{
+		char msg[50];
+		sprintf(msg, "Tarefa %d", i);
+		tarefas[i] = tarefaInit(msg, 7-i);
+		c11pqPush(pq, tarefas[i], compara);
+	}
+
 	puts("Prontinho! imprimindo...");
 	
 	printQueue(pq);

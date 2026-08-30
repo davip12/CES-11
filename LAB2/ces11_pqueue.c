@@ -42,7 +42,7 @@ void c11pqPush(c11pqueue *self, void *q, int (*compare)(void*, void*))
 	if (c11vEmpty(self))
 	{
 		void* elem = c11vPushBack(self);
-		memmove(elem, q, c11vElemSize(self));
+		memcpy(elem, q, c11vElemSize(self));
 		return;
 	}
 	
@@ -75,8 +75,7 @@ void c11pqPush(c11pqueue *self, void *q, int (*compare)(void*, void*))
 	// inserir o elemento q no vetor
 	// aqui 'pos' e' a posicao em que deve ser adicionado q
 	void* elem = c11vInsert(self, pos);
-	int elemSize = c11vElemSize(self);
-	memmove(elem, q, elemSize);
+	memcpy(elem, q, c11vElemSize(self));
 }
 
 void c11pqPop(c11pqueue *self)
