@@ -42,7 +42,7 @@ int c11pqSize(c11pqueue *self);
  * @brief Funcao que insere o elemento passado na posicao correta na fila de acordo
  * com a prioridade (faz busca binaria para encontrar a posicao correta).
  * @param [c11pqueue *self]: fila de prioridades no qual o elemento sera inserido.
- * @param [void*]: ponteiro para a o item que sera’ armazenado na fila.
+ * @param [void* q]: ponteiro para a o item que sera’ armazenado na fila.
  * @param int (*compara )(void*, void*): ponteiro para funcao que compara dois itens.
  */
 void c11pqPush(c11pqueue *self, void *q, int (*compare)(void*, void*));
