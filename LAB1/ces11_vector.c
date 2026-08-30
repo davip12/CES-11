@@ -67,7 +67,7 @@ c11vector* c11vInit(int elemSize , int n)
 {
 	c11vector* v = safeMalloc(sizeof(c11vector));
 	
-	v->data_ = safeMalloc(elemSize * n);
+	v->data_ = safeMalloc(elemSize * n > 0 ? elemSize * n : elemSize * 2);
 	v->elemSize_ = elemSize;
 	v->count_ = 0;
 	v->capacity_ = n == 0 ? 2 : n;
@@ -120,22 +120,28 @@ bool c11vEmpty(c11vector* self)
 
 void* c11vInsert(c11vector* self, int pos)
 {
-	if (!self)
-	{
-		fprintf(stderr, "c11Insert: argumento NULL");
-		exit(EXIT_FAILURE);
-	}
+    if (!self)
+    {
+        fprintf(stderr, "c11vInsert: argumento NULL");
+        exit(EXIT_FAILURE);
+    }
 
-	if (pos > c11vSize(self))
-		increaseCap(self);
-	
-	// nao consegui pensar outro jeito senao usando memmove (string.h)
-	// criando um buraco para inserir o novo elemento
-	memmove(c11vAt(self, pos + 1), c11vAt(self, pos), (c11vSize(self) - pos) * self->elemSize_);
-	
-	ADD_TO_SIZE(self, 1);
-	
-	return c11vAt(self, pos);	
+    if (pos < 0 || pos > c11vSize(self))
+    {
+        fprintf(stderr, "c11vInsert: posicao invalida\n");
+        exit(EXIT_FAILURE);
+    }
+
+    increaseCap(self);
+
+    // só desloca se houver elemento já existente naquela posição
+    if (pos < c11vSize(self))
+        memmove(c11vAt(self, pos + 1), c11vAt(self, pos),
+                (c11vSize(self) - pos) * self->elemSize_);
+
+    ADD_TO_SIZE(self, 1);
+
+    return c11vAt(self, pos);
 }
 
 void* c11vPushBack(c11vector* self)
@@ -156,7 +162,7 @@ void c11vPopFront(c11vector* self)
 {
 	if (c11vEmpty(self))
 		return;
-	// ver cv11Insert
+	// ver cv11Insert()
 	memmove(c11vAt(self, 0), c11vAt(self, 1), (c11vSize(self) - 1) * self->elemSize_);
 	
 	ADD_TO_SIZE(self, -1);
