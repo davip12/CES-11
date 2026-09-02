@@ -4,11 +4,14 @@
 // Davi Honorio de Brito Pontes
 // 9389
 
-#include "ces11_pqueue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+
+#include "ces11_pqueue.h"
+
+#define LINE_SIZE 80
 
 typedef struct tarefa
 {
@@ -64,31 +67,38 @@ void tarefaPrint(tarefa* t)
 	printf("%d\t%s\n", t->prioridade, t->descricao);
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
-	puts("Opa, cheguei.");
+	if (argc < 2)
+	{
+		fprintf(stderr, "usage: %s [path]", argv[0]);
+		exit(EXIT_FAILURE);
+	}
+	
+	FILE *entrada = fopen(argv[1], "r");
+	if (!entrada)
+	{
+		fprintf(stderr, "erro: arquivo '%s' nao encontrado.\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	
 	c11pqueue* pq = c11pqInit(sizeof(tarefa));
-	
 	puts("Inicializado.");
-	tarefa* tarefas[10];
 	
-	for (int i = 0; i < 7; i++)
+	char buffer[LINE_SIZE];
+	while(fgets(buffer, LINE_SIZE, entrada) != NULL)
 	{
-		char msg[50];
-		sprintf(msg, "Tarefa %d", i);
-		tarefas[i] = tarefaInit(msg, 7-i);
-		c11pqPush(pq, tarefas[i], compara);
+		char c;
+		sscanf(buffer, " %c", &c)
+		
+		if (c == '#')
+			continue;
+		
 	}
-
-	puts("Prontinho! imprimindo...");
 	
-	printQueue(pq);
 	puts("Freelando...");
-	for (int i = 0; i < 7; i++)
-	{
-		tarefaErase(tarefas[i]);
-	}
 	c11pqFree(pq);
+	fclose(entrada);
 	puts("Saindo...");
-	return 0;
+	return EXIT_SUCCESS;
 }
