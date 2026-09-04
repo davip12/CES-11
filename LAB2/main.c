@@ -8,63 +8,73 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "ces11_pqueue.h"
+#include "tarefa.h"
 
 #define LINE_SIZE 80
 
-typedef struct tarefa
-{
-	char descricao[50];
-	int prioridade;
-} tarefa;
+// variavel global para imprimir o cabecalho 
+bool primeiroComandoProxima = true;
 
-int compara(void* tarefa1, void* tarefa2)
+void agendaTerminar(c11pqueue *agenda, FILE* saida)
 {
-	assert(tarefa1);
-	assert(tarefa2);
-	
-	tarefa* t1 = tarefa1;
-	tarefa* t2 = tarefa2;
-	
-	return t1->prioridade - t2->prioridade;
-}
+	fprintf(saida, "\n");
+	fprintf(saida, "--------------------------------------------------\n");
+	fprintf(saida, "FICA PARA O DIA SEGUINTE                          \n");
+	fprintf(saida, "--------------------------------------------------\n");
 
-void printQueue(c11pqueue* pq)
-{
-	while (!c11pqEmpty(pq))
+	if (c11pqEmpty(agenda))
 	{
-		tarefa *top = c11pqTop(pq);
-		printf("%d\t%s\n", top->prioridade, top->descricao);
-		c11pqPop(pq);
+		fprintf(saida, "Agenda vazia.\n");
+	}
+
+	while (!c11pqEmpty(agenda))
+	{
+		tarefaPrint(c11pqTop(agenda), saida);
+		c11pqPop(agenda);
 	}
 }
 
-tarefa* tarefaInit(char *msg, int p)
+void agendaRemover(c11pqueue *agenda, FILE* saida)
 {
-	assert(strlen(msg) < 50);
-	
-	void* tmp = malloc(sizeof(tarefa));
-	assert(tmp);
-	
-	if (!tmp)
-		return NULL;
-	tarefa* t = tmp;
-	
-	strcpy(t->descricao, msg);
-	t->prioridade = p;
-	return t;
+	if (primeiroComandoProxima)
+	{
+		primeiroComandoProxima = false;
+		fprintf(saida, "--------------------------------------------------\n");
+		fprintf(saida, "RESPOSTAS DAS CONSULTAS                           \n");
+		fprintf(saida, "--------------------------------------------------\n");
+	}
+	if (c11pqEmpty(agenda))
+	{
+		fprintf(saida, "AVISO Nao ha tarefas na agenda\n");
+	}
+	else
+	{
+		tarefaPrint(c11pqTop(agenda), saida);
+		c11pqPop(agenda);
+	}
 }
 
-void tarefaErase(tarefa* t)
+void agendaAdicionar(c11pqueue* agenda, char* buffer)
 {
-	free(t);
-	t = NULL;
-}
-void tarefaPrint(tarefa* t)
-{
-	assert(t);
-	printf("%d\t%s\n", t->prioridade, t->descricao);
+	char comando[20];
+	char descricao[50];
+	int prioridade;
+	// Pega a prioridade
+	sscanf(buffer,"%s %d", comando, &prioridade);
+	// Pega a descricao
+	char *	p = buffer+strlen(comando);
+	while(isspace(*p) || isdigit(*(p)))
+		p++;
+	strcpy(descricao, p);
+
+	// cria a tarefa e coloca na agenda
+	tarefa* t = tarefaInit(prioridade, descricao);
+	c11pqPush(agenda, t, tarefaCompara);
+	// tarefaInit usa malloc, c11pqPush copia, entao precisa dar free:
+	tarefaFree(t);
 }
 
 int main(int argc, char** argv)
@@ -75,30 +85,55 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 	
+	// Abrir arquivos
 	FILE *entrada = fopen(argv[1], "r");
 	if (!entrada)
 	{
 		fprintf(stderr, "erro: arquivo '%s' nao encontrado.\n", argv[1]);
 		exit(EXIT_FAILURE);
-	}
+	} 
 	
-	c11pqueue* pq = c11pqInit(sizeof(tarefa));
+	FILE *saida = fopen("saida.txt", "w");
+	if (!entrada)
+	{
+		fprintf(stderr, "erro: nao foi possivel criar arquivo de saida.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Cabecalho do arquivo de saida
+	fprintf(saida, "CABECALHO\nSugou de escrever :/\n\n\n\n");
+
+	// Inicializar agenda
+	c11pqueue* agenda = c11pqInit(sizeof(tarefa));
 	puts("Inicializado.");
 	
+	// Ler arquivo de entrada e processar
 	char buffer[LINE_SIZE];
 	while(fgets(buffer, LINE_SIZE, entrada) != NULL)
 	{
 		char c;
-		sscanf(buffer, " %c", &c)
+		sscanf(buffer, " %c", &c);
 		
-		if (c == '#')
-			continue;
-		
+		char comando[20];
+
+		if (c != '#')
+		{	
+			// Ler comando
+			sscanf(buffer,"%s", comando);
+			
+			if (strcmp(comando, "FIM") == 0)
+				agendaTerminar(agenda, saida);
+			else if (strcmp(comando, "PROXIMA") == 0)
+				agendaRemover(agenda, saida);
+			else if (strcmp(comando, "NOVA") == 0)
+				agendaAdicionar(agenda, buffer);
+		}		
 	}
 	
-	puts("Freelando...");
-	c11pqFree(pq);
+	// Terminar 
+	c11pqFree(agenda);
 	fclose(entrada);
-	puts("Saindo...");
+	fclose(saida);
+
 	return EXIT_SUCCESS;
 }
