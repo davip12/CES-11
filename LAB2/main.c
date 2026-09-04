@@ -105,7 +105,6 @@ int main(int argc, char** argv)
 
 	// Inicializar agenda
 	c11pqueue* agenda = c11pqInit(sizeof(tarefa));
-	puts("Inicializado.");
 	
 	// Ler arquivo de entrada e processar
 	char buffer[LINE_SIZE];
