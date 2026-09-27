@@ -1,13 +1,11 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -g -I"../LAB1"
+CFLAGS = -Wall -Wextra -pedantic -g
 
-TARGET = pqueue.exe
-OBJECTS = ../LAB1/ces11_vector.o ces11_pqueue.o main.o tarefa.o
+TARGET = agenda
+OBJECTS = ces11_vector.o ces11_pqueue.o tarefa.o main.o
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@
-
-$(OBJECTS): %.o: %.c
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)
