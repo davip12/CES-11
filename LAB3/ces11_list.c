@@ -54,6 +54,21 @@ void c11lFree(c11List* self)
 	free(self);
 }
 
+bool c11lEmpty(c11List* self)
+{
+	return self->size_ == 0;
+}
+
+int c11lSize(c11List* self)
+{
+	return self->size_;
+}
+
+int c11lElemSize(c11List* self)
+{
+	return self->elemSize_;
+}
+
 void* c11lAt(c11List* self, int  pos)
 {
 	assert(self && pos >= -self->size_ && pos <= self->size_);
@@ -64,13 +79,20 @@ void* c11lAt(c11List* self, int  pos)
 		return (char*) self->head_ + pos * self->elemSize_;
 }
 
-bool c11lEmpty(c11List* self)
+
+void* c11lFront(c11List* self)
 {
-	return self->size_ == 0;
+	return c11lAt(self, 0);
+}
+
+void* c11lBack(c11List* self)
+{
+	return c11lAt(self, self->size_ - 1);
 }
 
 void* c11lInsert(c11List* self, int pos)
 {
+	puts("c11lInsert chamado!");
 	// Se a lista esta' cheia, aumenta a capacidade
 	if (self->size_ == self->capacity_)
 	{
@@ -113,6 +135,8 @@ void* c11lInsert(c11List* self, int pos)
 	}
 
 	++self->size_;
+
+	puts("c11lInsert: tudo ok!");
 	return c11lAt(self, pos);
 }
 
@@ -135,4 +159,24 @@ void c11lErase(c11List* self, int pos)
 	{
 		self->head_ = self->data_;
 	}
+}
+
+void* c11lPushFront(c11List* self)
+{
+	return c11lInsert(self, 0);
+}
+
+void* c11lPushBack(c11List* self)
+{
+	return c11lInsert(self, self->size_);
+}
+
+void c11lPopFront(c11List* self)
+{
+	c11lErase(self, 0);
+}
+
+void c11lPopBack(c11List* self)
+{
+	c11lErase(self, self->size_-1);
 }
