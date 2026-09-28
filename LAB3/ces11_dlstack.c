@@ -12,12 +12,24 @@
 #include <string.h>
 #include <assert.h>
 
+/**
+    @brief Representa um no da pilha.
+    @field data_ Dados armazenados no no.
+    @field next_ Proximo no da pilha.
+*/
 typedef struct Node
 {
     void* data_;
     struct Node* next_;
 } Node;
 
+/**
+    @brief Representa uma pilha encadeada.
+    @field first_ Primeiro no da pilha.
+    @field last_ Ultimo no da pilha.
+    @field size_ Quantidade de elementos.
+    @field elemSize_ Tamanho de cada elemento em bytes.
+*/
 struct c11Stack
 {
     Node* first_;
@@ -37,6 +49,12 @@ static void* safeMalloc(int bytes)
 	return tmp;
 }
 
+/**
+    @brief Cria um no contendo uma cópia dos dados fornecidos.
+    @param p Dados a serem armazenados.
+    @param elemSize Tamanho dos dados em bytes.
+    @return Ponteiro para o no criado.
+*/
 static Node* createNode(void* p, int elemSize)
 {
     assert(p  && elemSize > 0);
@@ -46,7 +64,10 @@ static Node* createNode(void* p, int elemSize)
     node->next_ = NULL;
     return node;   
 }
-
+/**
+    @brief Libera um no e seus dados.
+    @param node No a ser destruído.
+*/
 static void destroyNode(Node* node)
 {
     if(node)
@@ -54,11 +75,16 @@ static void destroyNode(Node* node)
     free(node);
 }
 
-static Node* getNext(Node* node)
-{
-    return node->next_;
-}
+// static Node* getNext(Node* node)
+// {
+//     return node->next_;
+// }
 
+/**
+    @brief Retorna os dados armazenados em um nó.
+    @param node Nó a ser consultado.
+    @return Ponteiro para os dados do nó.
+*/
 static Node* getData(Node* node)
 {
     return node->data_;
@@ -100,23 +126,20 @@ int c11sSize(c11Stack* self)
 
 void* c11sTop(c11Stack* self)
 {
+    if (c11sEmpty(self))
+        return NULL;
     return getData(self->first_);
 }
 
 void c11sPush(c11Stack* self, void* p)
 {
-    puts("c11sPush chamado!");
-    printf("elemSize_ = %d\n", self->elemSize_);
     Node* newNode = createNode(p, self->elemSize_);
-    puts("node criado");
     newNode->next_ = self->first_;
     self->first_ = newNode;
     if (!self->last_)
         self->last_ = newNode;
 
     ++self->size_;
-
-    puts("c11sPush ok");
 }
 
 void c11sPop(c11Stack* self)

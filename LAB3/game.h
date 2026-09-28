@@ -7,6 +7,9 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <stdbool.h>
+#include <stdio.h>
+
 #include "ces11_ccqueue.h"
 #include "ces11_dlstack.h"
 
@@ -24,41 +27,73 @@ typedef struct NPC NPC;
 // struct que representa o PC
 typedef struct PC PC;
 
-# define MAXSIZE 32
-// struct que representa um item em que o NPC MONSTER carrega
-struct Item 
-{
-	enum ItemType type_ ; // tipo do item {WEAPON, TREASURE}
-	char name_ [MAXSIZE]; // nome do item
-	int value_;			  // valor do item (se TREASURE; senao -1) pago pelo NPC MERCHANT
-	int durability_;	  // # de vezes que pode ser usado (se WEAPON ; senao -1)
-};
-
-// struct que representa um NPC
-struct NPC
-{
-	enum NpcType type_;		// tipo do NPC {MONSTER, VILLAGER, MERCHANT}
-	char name_ [MAXSIZE]; 	// nome do NPC
-	int hp_; 				// pontos de vida do NPC (se MONSTER; senao , -1)
-	float tradeRate_; 		// multiplicador usado pelo MERCHANT para pagar pelo seu item
-	Item loot_;				// item que o NPC carrega (se MONSTER; vazio se MERCHANT)
-};
-
-// struct que representa o PC
-struct PC
-{
-	char name_ [MAXSIZE];	// nome do PC (aqui, voce pode escrever qualquer nome)
-	int coins_;				// contador para o dinheiro recebido da venda dos itens
-	c11Queue *weapons_ ;	// inventario: ptr para fila de struct Item (WEAPON)
-	c11Stack *backpack_ ;	// mochila: ptr para pilha de struct Item (TREASURE)
-};
-
-
+/**
+*   @brief Cria um item.
+*   @param type Tipo do item.
+*   @param name Nome do item.
+*   @param value Valor do item.
+*   @param durability Durabilidade do item.
+*   @return Ponteiro para o item criado.
+*/
 Item* createItem(enum ItemType type, char* name, int value, int durability);
+
+/**
+*   @brief Libera um item.
+*   @param self Item a ser destruído.
+*/
 void destroyItem(Item* self);
 
-PC* pcInit();
+/**
+*   @brief Cria um NPC.
+*   @param type Tipo do NPC.
+*   @param name Nome do NPC.
+*   @param hp Pontos de vida do NPC.
+*   @param tradeRate Taxa (multiplicador) de negociacao.
+*   @param loot Item carregado pelo NPC.
+*   @return Ponteiro para o NPC criado.
+*/
+NPC* createNPC(enum NpcType type, char* name, int hp, float tradeRate, Item loot);
+
+/**
+*   @brief Libera um NPC.
+*   @param self NPC a ser destruído.
+*/
+void destroyNPC(NPC* self);
+
+/**
+*   @brief Inicializa o personagem do jogador.
+*   @param name Nome do personagem.
+*   @return Ponteiro para o personagem criado.
+*/
+PC* pcInit(char* name);
+
+/**
+*   @brief Libera o personagem e seus recursos.
+*   @param self Personagem a ser liberado.
+*/
 void freePC(PC* player);
 
+/**
+*   @brief Retorna a pontuacao do personagem.
+*   @param player Personagem a ser consultado.
+*   @return Quantidade de moedas acumuladas.
+*/
+int getScore(PC* player);
+
+/**
+*   @brief Converte uma linha de texto em um NPC.
+*   @param buffer Texto contendo os dados do NPC.
+*   @return Ponteiro para o NPC criado ou NULL em caso de erro.
+*/
+NPC* parseNPC(char* buffer);
+
+/**
+*   @brief Processa um encontro entre o jogador e um NPC.
+*   @param player Personagem do jogador.
+*   @param mob NPC encontrado.
+*   @param stream Fluxo de saida das mensagens do encontro.
+*   @return true se o jogador for derrotado, false caso contrario.
+*/
+bool processEncounter(PC* player, NPC* mob, FILE* stream);
 
 #endif // GAME_H

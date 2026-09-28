@@ -92,7 +92,6 @@ void* c11lBack(c11List* self)
 
 void* c11lInsert(c11List* self, int pos)
 {
-	puts("c11lInsert chamado!");
 	// Se a lista esta' cheia, aumenta a capacidade
 	if (self->size_ == self->capacity_)
 	{
@@ -135,8 +134,6 @@ void* c11lInsert(c11List* self, int pos)
 	}
 
 	++self->size_;
-
-	puts("c11lInsert: tudo ok!");
 	return c11lAt(self, pos);
 }
 
